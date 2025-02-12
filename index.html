@@ -68,30 +68,24 @@
     </div>
 
     <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="card" id="upload">
-                    <div class="card-body">
-                        <h5 class="card-title">Upload File</h5>
-                        <form id="uploadForm">
-                            <div class="mb-3">
-                                <label for="judul" class="form-label">Judul</label>
-                                <input type="text" class="form-control" id="judul" placeholder="Masukkan judul" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="deskripsi" class="form-label">Deskripsi</label>
-                                <textarea class="form-control" id="deskripsi" placeholder="Masukkan deskripsi" rows="3" required></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="file" class="form-label">Pilih File</label>
-                                <input type="file" class="form-control" id="file" accept="image/*,application/pdf">
-                                <img id="preview" class="preview-img mt-2" style="display: none;">
-                                <iframe id="pdfViewer" class="pdf-viewer"></iframe>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Upload</button>
-                        </form>
+        <h5 class="text-center">Upload File</h5>
+        <div class="card">
+            <div class="card-body">
+                <form id="uploadForm">
+                    <div class="mb-3">
+                        <label for="judul" class="form-label">Judul</label>
+                        <input type="text" class="form-control" id="judul" required>
                     </div>
-                </div>
+                    <div class="mb-3">
+                        <label for="deskripsi" class="form-label">Deskripsi</label>
+                        <textarea class="form-control" id="deskripsi" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Pilih File</label>
+                        <input type="file" class="form-control" id="file" accept="image/*,application/pdf">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
             </div>
         </div>
     </div>
@@ -107,51 +101,45 @@
             const form = document.getElementById("uploadForm");
             const uploadedFilesContainer = document.getElementById("uploaded-files");
             const fileInput = document.getElementById("file");
-            const previewImg = document.getElementById("preview");
-            const pdfViewer = document.getElementById("pdfViewer");
-
-            fileInput.addEventListener("change", function () {
-                const file = fileInput.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        if (file.type.startsWith("image")) {
-                            previewImg.src = e.target.result;
-                            previewImg.style.display = "block";
-                            pdfViewer.style.display = "none";
-                        } else if (file.type === "application/pdf") {
-                            pdfViewer.src = e.target.result;
-                            pdfViewer.style.display = "block";
-                            previewImg.style.display = "none";
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
 
             function loadFiles() {
                 uploadedFilesContainer.innerHTML = "";
-                const files = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
+                let files = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
                 files.forEach((file, index) => {
                     const card = document.createElement("div");
                     card.classList.add("col");
                     card.innerHTML = `
                         <div class="card">
-                            ${file.type === "image" ? `<img src="${file.url}" class="preview-img" alt="Uploaded Image">` : `<iframe src="${file.url}" class="pdf-viewer" style="display: block;"></iframe>`}
+                            ${file.type === "image" ? `<img src="${file.url}" class="preview-img" alt="Uploaded Image">` : `<iframe src="${file.url}" class="pdf-viewer"></iframe>`}
                             <div class="card-body">
                                 <h6 class="card-title">${file.judul}</h6>
                                 <p class="card-text">${file.deskripsi}</p>
-                                <button class="btn btn-danger btn-sm" onclick="deleteFile(${index})">Hapus</button>
+                                <button class="btn btn-danger btn-sm delete-btn" data-index="${index}">Hapus</button>
                             </div>
                         </div>
                     `;
                     uploadedFilesContainer.appendChild(card);
                 });
+
+                // Tambahkan event listener ke setiap tombol hapus
+                document.querySelectorAll(".delete-btn").forEach(button => {
+                    button.addEventListener("click", function () {
+                        deleteFile(this.getAttribute("data-index"));
+                    });
+                });
             }
 
             function saveFile(judul, deskripsi, url, type) {
-                const files = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
+                let files = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
                 files.push({ judul, deskripsi, url, type });
+                localStorage.setItem("uploadedFiles", JSON.stringify(files));
+                loadFiles();
+            }
+
+            function deleteFile(index) {
+                let files = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
+                console.log("Menghapus file index:", index);
+                files.splice(index, 1);
                 localStorage.setItem("uploadedFiles", JSON.stringify(files));
                 loadFiles();
             }
@@ -160,12 +148,18 @@
                 event.preventDefault();
                 const judul = document.getElementById("judul").value;
                 const deskripsi = document.getElementById("deskripsi").value;
-                const url = fileInput.files[0] ? URL.createObjectURL(fileInput.files[0]) : "";
-                const type = fileInput.files[0].type.startsWith("image") ? "image" : "pdf";
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    alert("Pilih file terlebih dahulu!");
+                    return;
+                }
+
+                const url = URL.createObjectURL(file);
+                const type = file.type.startsWith("image") ? "image" : "pdf";
+
                 saveFile(judul, deskripsi, url, type);
                 form.reset();
-                previewImg.style.display = "none";
-                pdfViewer.style.display = "none";
             });
 
             loadFiles();
