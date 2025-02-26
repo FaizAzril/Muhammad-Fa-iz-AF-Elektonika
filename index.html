@@ -42,14 +42,14 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="#">Website Elektronika</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="#navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#">Beranda</a></li>
                     <li class="nav-item"><a class="nav-link" href="#profil">Profil</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#upload">Upload</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#tugas">Tugas</a></li>
                 </ul>
             </div>
         </div>
@@ -67,113 +67,33 @@
         </div>
     </div>
 
-    <div class="container mt-4">
-        <h5 class="text-center">Upload File</h5>
-        <div class="card">
-            <div class="card-body">
-                <form id="uploadForm">
-                    <div class="mb-3">
-                        <label for="judul" class="form-label">Judul</label>
-                        <input type="text" class="form-control" id="judul" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="deskripsi" class="form-label">Deskripsi</label>
-                        <textarea class="form-control" id="deskripsi" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="file" class="form-label">Pilih File</label>
-                        <input type="file" class="form-control" id="file" accept="image/*,application/pdf">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Upload</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="container mt-4">
-        <h5 class="text-center">File yang Telah Diupload</h5>
-        <div class="row row-cols-1 row-cols-md-3 g-4" id="uploaded-files">
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.getElementById("uploadForm");
-            const uploadedFilesContainer = document.getElementById("uploaded-files");
-            const fileInput = document.getElementById("file");
-
-            function loadFiles() {
-                uploadedFilesContainer.innerHTML = "";
-                let files = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
-                files.forEach((file, index) => {
-                    const card = document.createElement("div");
-                    card.classList.add("col");
-                    card.innerHTML = `
-                        <div class="card">
-                            ${file.type === "image" ? `<img src="${file.url}" class="preview-img" alt="Uploaded Image">` : `<iframe src="${file.url}" class="pdf-viewer"></iframe>`}
-                            <div class="card-body">
-                                <h6 class="card-title">${file.judul}</h6>
-                                <p class="card-text">${file.deskripsi}</p>
-                                <button class="btn btn-danger btn-sm delete-btn" data-index="${index}">Hapus</button>
-                            </div>
-                        </div>
-                    `;
-                    uploadedFilesContainer.appendChild(card);
-                });
-
-                // Tambahkan event listener ke setiap tombol hapus
-                document.querySelectorAll(".delete-btn").forEach(button => {
-                    button.addEventListener("click", function () {
-                        deleteFile(this.getAttribute("data-index"));
-                    });
-                });
-            }
-
-            function saveFile(judul, deskripsi, url, type) {
-                let files = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
-                files.push({ judul, deskripsi, url, type });
-                localStorage.setItem("uploadedFiles", JSON.stringify(files));
-                loadFiles();
-            }
-
-            function deleteFile(index) {
-                let files = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
-                console.log("Menghapus file index:", index);
-                files.splice(index, 1);
-                localStorage.setItem("uploadedFiles", JSON.stringify(files));
-                loadFiles();
-            }
-
-            form.addEventListener("submit", function (event) {
-                event.preventDefault();
-                const judul = document.getElementById("judul").value;
-                const deskripsi = document.getElementById("deskripsi").value;
-                const file = fileInput.files[0];
-
-                if (!file) {
-                    alert("Pilih file terlebih dahulu!");
-                    return;
-                }
-
-                const url = URL.createObjectURL(file);
-                const type = file.type.startsWith("image") ? "image" : "pdf";
-
-                saveFile(judul, deskripsi, url, type);
-                form.reset();
-            });
-
-            loadFiles();
-        });
-    </script>
-       <div class="container mt-4">
-        <h5 class="text-center">Dokumen Tambahan</h5>
-        <div class="row">
-            <div class="col-md-6">
+    <div class="container mt-4" id="tugas">
+        <h5 class="text-center">Tugas yang sudah dikerjakan</h5>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="card-title">Pengumpulan Tugas Elektronika</h6>
-                        <p class="card-text">Website dalam tahap pengerjaan, untuk file pengumpulan tugas ada di dalam Google Drive dahulu.</p>
-                        <a href="https://drive.google.com/drive/folders/13DYaJPkFN1vvVYtzA_GGgWW00XyOsnvd?usp=sharing" class="btn btn-primary" target="_blank">Buka Google Drive</a>
+                        <h6 class="card-title">Tugas 1</h6>
+                        <p class="card-text">Menghitung total hambatan</p>
+                        <a href="https://drive.google.com/file/d/1lJ5sOAj_gUnjYz_HiXycK2mFaC4Yl0Yn/view?usp=drive_link" class="btn btn-primary" target="_blank">Buka Google Drive</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">Tugas 2</h6>
+                        <p class="card-text">Daya Resistive</p>
+                        <a href="https://drive.google.com/file/d/10LGh40JmVcTHM082dtI2Sh2jTi1hHcZl/view?usp=drive_link" class="btn btn-primary" target="_blank">Buka Google Drive</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">......</h6>
+                        <p class="card-text">......</p>
+                        <a href="https://drive.google.com/drive/folders/example-link-2" class="btn btn-primary" target="_blank">Buka Google Drive</a>
                     </div>
                 </div>
             </div>
